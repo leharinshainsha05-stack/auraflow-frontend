@@ -5,6 +5,14 @@ import './App.css';
 const API_BASE = 'https://auraflow-backend-nu2p.onrender.com';
 
 function App() {
+  const [showFlash, setShowFlash] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [pendingSection, setPendingSection] = useState(null);
+  const [loginForm, setLoginForm] = useState({ email: '', password: '' });
+  const [authView, setAuthView] = useState('login');
+  const [authLoading, setAuthLoading] = useState(false);
+
   const [savedProjects, setSavedProjects] = useState([]);
   const [activeProjectId, setActiveProjectId] = useState(null);
   const [activeSection, setActiveSection] = useState('new');
@@ -36,6 +44,21 @@ function App() {
   const [chatInput, setChatInput] = useState('');
   const [chatLoading, setChatLoading] = useState(false);
   const chatBottomRef = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowFlash(false), 2500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const attemptNavigation = (section) => {
+    if (!isAuthenticated) {
+      setPendingSection(section);
+      setShowLogin(true);
+    } else {
+      setActiveSection(section);
+      setActiveProjectId(null);
+    }
+  };
 
   useEffect(() => {
     const stored = localStorage.getItem('auraflow_projects');
@@ -520,14 +543,14 @@ function App() {
       <div className="sidebar-section">
         <span className="sidebar-label">🛠️ TOOLS</span>
         <button className={`tool-btn ${activeSection === 'multi' ? 'active' : ''}`}
-          onClick={() => { setActiveSection('multi'); setActiveProjectId(null); }}>
+          onClick={() => attemptNavigation('multi')}>
           🗂️ Multi-Project
           {savedProjects.filter(p => p.source === 'file').length >= 2 && (
             <span className="ready-badge">Ready</span>
           )}
         </button>
         <button className={`tool-btn ${activeSection === 'reminders' ? 'active' : ''}`}
-          onClick={() => { setActiveSection('reminders'); setActiveProjectId(null); }}>
+          onClick={() => attemptNavigation('reminders')}>
           🔔 Reminders
           {reminders.filter(r => r.urgency === 'high').length > 0 && (
             <span className="urgent-badge">{reminders.filter(r => r.urgency === 'high').length}</span>
@@ -622,13 +645,13 @@ function App() {
         <p>Choose how you want to start</p>
       </div>
       <div className="new-project-options">
-        <div className="option-card" onClick={() => setActiveSection('soul')}>
+        <div className="option-card" onClick={() => attemptNavigation('soul')}>
           <span className="option-icon">🔍</span>
           <h3>Soul Search</h3>
           <p>Real-time market research, competitor analysis, and strategic positioning</p>
           <span className="option-tag">Research + Strategy</span>
         </div>
-        <div className="option-card" onClick={() => setActiveSection('file')}>
+        <div className="option-card" onClick={() => attemptNavigation('file')}>
           <span className="option-icon">📁</span>
           <h3>File Manager</h3>
           <p>Upload project files and AI will analyze, segregate, and create a deadline-aware plan</p>
@@ -1012,8 +1035,165 @@ function App() {
     );
   };
 
+  // ── Flash Screen & Login Modal ─────────────────────────────────
+  if (showFlash) {
+    return (
+      <div style={{height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#121212', zIndex: 9999, position: 'relative'}}>
+         <style>{`
+           @keyframes professionalFade {
+             0% { opacity: 0; transform: scale(0.98) translateY(10px); }
+             30% { opacity: 1; transform: scale(1) translateY(0); }
+             85% { opacity: 1; transform: scale(1) translateY(0); }
+             100% { opacity: 0; transform: scale(0.98) translateY(-10px); }
+           }
+         `}</style>
+         <h1 style={{fontSize: '3.5rem', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', margin: 0, animation: 'professionalFade 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+           <span style={{marginRight: '8px'}}>🌊</span>AuraFlow
+         </h1>
+      </div>
+    );
+  }
+
+  const renderAuthModal = () => {
+    if (!showLogin) return null;
+
+    const handleGoogleLogin = () => {
+      alert('Google OAuth flow would trigger here. Ready for backend integration!');
+    };
+
+    const handleAuthSubmit = async (type) => {
+      if (!loginForm.email) return alert('Please enter an email address');
+      if (type !== 'forgot' && !loginForm.password) return alert('Please enter a password');
+      
+      setAuthLoading(true);
+      try {
+        setTimeout(() => {
+          if (type === 'login') {
+            setIsAuthenticated(true);
+            setShowLogin(false);
+            if (pendingSection) {
+              setActiveSection(pendingSection);
+              setActiveProjectId(null);
+              setPendingSection(null);
+            }
+          } else if (type === 'signup') {
+            alert('Account successfully created! You may now log in.');
+            setAuthView('login');
+          } else if (type === 'forgot') {
+            alert('If an account matches that email, we have sent a reset password and username recovery link!');
+            setAuthView('login');
+          }
+          setAuthLoading(false);
+        }, 800);
+      } catch (err) {
+        alert(err.response?.data?.detail || err.message);
+        setAuthLoading(false);
+      }
+    };
+
+    const googleIcon = (
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{width: '20px', height: '20px', marginRight: '10px'}}>
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.7 17.74 9.5 24 9.5z"></path>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+        <path fill="none" d="M0 0h48v48H0z"></path>
+      </svg>
+    );
+
+    return (
+      <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(10, 10, 15, 0.85)', backdropFilter: 'blur(10px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+         <div className="card" style={{width: '420px', textAlign: 'center', padding: '30px 40px', background: '#13131a'}}>
+            
+            {authView === 'login' && (
+              <>
+                <h2 style={{color: '#ffffff', marginBottom: '4px', fontSize: '1.8rem'}}>🌊 AuraFlow Access</h2>
+                <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Please authenticate to access the engine core.</p>
+
+                <input placeholder="Email Address" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} style={{marginBottom: '12px', textAlign: 'center'}} />
+                <input type="password" placeholder="Password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})} style={{marginBottom: '8px', textAlign: 'center'}} />
+                
+                <div style={{display: 'flex', justifyContent: 'flex-start', marginBottom: '20px'}}>
+                  <span style={{color: '#00bfff', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => setAuthView('forgot')}>Forgot password?</span>
+                </div>
+
+                <button style={{width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)'}} onClick={() => handleAuthSubmit('login')} disabled={authLoading}>
+                  {authLoading ? 'Verifying...' : 'Login with Mail'}
+                </button>
+                
+                <div style={{display: 'flex', alignItems: 'center', margin: '20px 0', color: '#555', fontSize: '0.75rem'}}>
+                  <div style={{flex: 1, height: '1px', background: '#2a2a3a'}}></div>
+                  <span style={{padding: '0 10px', fontWeight: 'bold'}}>OR CONTINUE WITH</span>
+                  <div style={{flex: 1, height: '1px', background: '#2a2a3a'}}></div>
+                </div>
+
+                <button style={{width: '100%', background: '#1a1a2e', border: '1px solid rgba(0,191,255,0.3)', color: '#fff', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'none'}} onClick={handleGoogleLogin}>
+                  {googleIcon} Login with Google
+                </button>
+                
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
+                  <span style={{color: '#888', fontSize: '0.85rem'}}>New here? <span style={{color: '#00bfff', cursor: 'pointer', fontWeight: 'bold', marginLeft: '6px'}} onClick={() => setAuthView('signup')}>Sign up</span></span>
+                </div>
+              </>
+            )}
+
+            {authView === 'signup' && (
+              <>
+                <h2 style={{color: '#ffffff', marginBottom: '4px', fontSize: '1.8rem'}}>🌊 Join AuraFlow</h2>
+                <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Create an account to unlock the strategic engine.</p>
+
+                <input placeholder="Email Address" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} style={{marginBottom: '12px', textAlign: 'center'}} />
+                <input type="password" placeholder="Create Password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})} style={{marginBottom: '20px', textAlign: 'center'}} />
+                
+                <button style={{width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)'}} onClick={() => handleAuthSubmit('signup')} disabled={authLoading}>
+                  {authLoading ? 'Creating...' : 'Register with Mail'}
+                </button>
+
+                <div style={{display: 'flex', alignItems: 'center', margin: '20px 0', color: '#555', fontSize: '0.75rem'}}>
+                  <div style={{flex: 1, height: '1px', background: '#2a2a3a'}}></div>
+                  <span style={{padding: '0 10px', fontWeight: 'bold'}}>OR CONTINUE WITH</span>
+                  <div style={{flex: 1, height: '1px', background: '#2a2a3a'}}></div>
+                </div>
+
+                <button style={{width: '100%', background: '#1a1a2e', border: '1px solid rgba(0,191,255,0.3)', color: '#fff', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'none'}} onClick={handleGoogleLogin}>
+                  {googleIcon} Sign up with Google
+                </button>
+                
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
+                  <span style={{color: '#888', fontSize: '0.85rem'}}>Already have an account?<span style={{color: '#00bfff', cursor: 'pointer', fontWeight: 'bold', marginLeft: '6px'}} onClick={() => setAuthView('login')}>Login</span></span>
+                </div>
+              </>
+            )}
+
+            {authView === 'forgot' && (
+              <>
+                <h2 style={{color: '#ffffff', marginBottom: '8px', fontSize: '1.8rem'}}>🔒 Reset Credentials</h2>
+                <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Enter your email. If registered, we will send an email containing your username alongside a reset password option.</p>
+                
+                <input placeholder="Registered Email Address" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} style={{marginBottom: '20px', textAlign: 'center'}} />
+                
+                <button style={{width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)'}} onClick={() => handleAuthSubmit('forgot')} disabled={authLoading}>
+                  {authLoading ? 'Sending...' : 'Send Reset Link'}
+                </button>
+                
+                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
+                  <span style={{color: '#00bfff', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => setAuthView('login')}>Back to Login</span>
+                </div>
+              </>
+            )}
+
+            {(authView === 'login' || authView === 'signup') && (
+               <button style={{width: '100%', background: 'transparent', color: '#444', marginTop: '8px', border: 'none', fontSize: '0.75rem', boxShadow: 'none'}} onClick={() => { setShowLogin(false); setPendingSection(null); setAuthView('login'); }}>[Cancel & Return to Home]</button>
+            )}
+         </div>
+      </div>
+    );
+  };
+
   // ── Main Return ────────────────────────────────────────────────
   return (
+    <>
+    {renderAuthModal()}
     <div className="layout">
       {renderSidebar()}
       <div className="content-area">
@@ -1026,6 +1206,7 @@ function App() {
       </div>
       {chatOpen && renderChatPanel()}
     </div>
+    </>
   );
 }
 
