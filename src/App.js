@@ -1059,7 +1059,7 @@ function App() {
     if (!showLogin) return null;
 
     const handleGoogleLogin = () => {
-      window.location.href = 'https://auraflow-backend-nu2p.onrender.com/auth/google';
+      window.location.href = 'https://auraflow-backend-nu2p.onrender.com/api/google';
     };
 
     const handleAuthSubmit = async (type) => {
