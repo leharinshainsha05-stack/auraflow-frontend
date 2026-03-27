@@ -1058,7 +1058,7 @@ function App() {
     if (!showLogin) return null;
 
     const handleGoogleLogin = () => {
-      alert('Google OAuth flow would trigger here. Ready for backend integration!');
+      //alert('Google OAuth flow would trigger here. Ready for backend integration!');
     };
 
     const handleAuthSubmit = async (type) => {
@@ -1077,10 +1077,10 @@ function App() {
               setPendingSection(null);
             }
           } else if (type === 'signup') {
-            alert('Account successfully created! You may now log in.');
+            //alert('Account successfully created! You may now log in.');
             setAuthView('login');
           } else if (type === 'forgot') {
-            alert('If an account matches that email, we have sent a reset password and username recovery link!');
+            //alert('If an account matches that email, we have sent a reset password and username recovery link!');
             setAuthView('login');
           }
           setAuthLoading(false);
