@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const API_BASE = 'https://auraflow-backend-nu2p.onrender.com';
+const API_BASE = 'https://auraflow-backend-nu2p.onrender.com/api';
 
 function App() {
   const [showFlash, setShowFlash] = useState(true);
@@ -12,6 +12,7 @@ function App() {
   const [loginForm, setLoginForm] = useState({ email: '', password: '' });
   const [authView, setAuthView] = useState('login');
   const [authLoading, setAuthLoading] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   const [savedProjects, setSavedProjects] = useState([]);
   const [activeProjectId, setActiveProjectId] = useState(null);
@@ -1058,12 +1059,13 @@ function App() {
     if (!showLogin) return null;
 
     const handleGoogleLogin = () => {
-      //alert('Google OAuth flow would trigger here. Ready for backend integration!');
+      window.location.href = 'https://auraflow-backend-nu2p.onrender.com/auth/google';
     };
 
     const handleAuthSubmit = async (type) => {
-      if (!loginForm.email) return alert('Please enter an email address');
-      if (type !== 'forgot' && !loginForm.password) return alert('Please enter a password');
+      setAuthError('');
+      if (!loginForm.email) return setAuthError('Please enter an email address');
+      if (type !== 'forgot' && !loginForm.password) return setAuthError('Please enter a password');
       
       setAuthLoading(true);
       try {
@@ -1086,7 +1088,7 @@ function App() {
           setAuthLoading(false);
         }, 800);
       } catch (err) {
-        alert(err.response?.data?.detail || err.message);
+        setAuthError(err.response?.data?.detail || err.message);
         setAuthLoading(false);
       }
     };
@@ -1110,9 +1112,15 @@ function App() {
                 <h2 style={{color: '#ffffff', marginBottom: '4px', fontSize: '1.8rem'}}>🌊 AuraFlow Access</h2>
                 <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Please authenticate to access the engine core.</p>
 
-                <input placeholder="Email Address" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} style={{marginBottom: '12px', textAlign: 'center'}} />
-                <input type="password" placeholder="Password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})} style={{marginBottom: '8px', textAlign: 'center'}} />
+                <input placeholder="Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({...loginForm, email: e.target.value}); }} style={{marginBottom: '12px', textAlign: 'center'}} />
+                <input type="password" placeholder="Password" value={loginForm.password} onChange={e => { setAuthError(''); setLoginForm({...loginForm, password: e.target.value}); }} style={{marginBottom: '8px', textAlign: 'center'}} />
                 
+                {authError && (
+                  <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '0 0 10px 0' }}>
+                    {authError}
+                  </p>
+                )}
+
                 <div style={{display: 'flex', justifyContent: 'flex-start', marginBottom: '20px'}}>
                   <span style={{color: '#00bfff', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => setAuthView('forgot')}>Forgot password?</span>
                 </div>
@@ -1142,9 +1150,15 @@ function App() {
                 <h2 style={{color: '#ffffff', marginBottom: '4px', fontSize: '1.8rem'}}>🌊 Join AuraFlow</h2>
                 <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Create an account to unlock the strategic engine.</p>
 
-                <input placeholder="Email Address" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} style={{marginBottom: '12px', textAlign: 'center'}} />
-                <input type="password" placeholder="Create Password" value={loginForm.password} onChange={e => setLoginForm({...loginForm, password: e.target.value})} style={{marginBottom: '20px', textAlign: 'center'}} />
+                <input placeholder="Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({...loginForm, email: e.target.value}); }} style={{marginBottom: '12px', textAlign: 'center'}} />
+                <input type="password" placeholder="Create Password" value={loginForm.password} onChange={e => { setAuthError(''); setLoginForm({...loginForm, password: e.target.value}); }} style={{marginBottom: '20px', textAlign: 'center'}} />
                 
+                {authError && (
+                  <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '-10px 0 10px 0' }}>
+                    {authError}
+                  </p>
+                )}
+
                 <button style={{width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)'}} onClick={() => handleAuthSubmit('signup')} disabled={authLoading}>
                   {authLoading ? 'Creating...' : 'Register with Mail'}
                 </button>
@@ -1170,8 +1184,14 @@ function App() {
                 <h2 style={{color: '#ffffff', marginBottom: '8px', fontSize: '1.8rem'}}>🔒 Reset Credentials</h2>
                 <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Enter your email. If registered, we will send an email containing your username alongside a reset password option.</p>
                 
-                <input placeholder="Registered Email Address" value={loginForm.email} onChange={e => setLoginForm({...loginForm, email: e.target.value})} style={{marginBottom: '20px', textAlign: 'center'}} />
+                <input placeholder="Registered Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({...loginForm, email: e.target.value}); }} style={{marginBottom: '20px', textAlign: 'center'}} />
                 
+                {authError && (
+                  <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '-10px 0 10px 0' }}>
+                    {authError}
+                  </p>
+                )}
+
                 <button style={{width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)'}} onClick={() => handleAuthSubmit('forgot')} disabled={authLoading}>
                   {authLoading ? 'Sending...' : 'Send Reset Link'}
                 </button>
