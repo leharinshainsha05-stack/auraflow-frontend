@@ -62,10 +62,9 @@ function App() {
       setActiveProjectId(null);
       setPendingSection(null);
     }
-    // Clean up URL
     window.history.replaceState({}, document.title, '/');
   }
-}, []);
+}, []);// eslint-disable-line react-hooks/exhaustive-deps
 
   const attemptNavigation = (section) => {
     if (!isAuthenticated) {
