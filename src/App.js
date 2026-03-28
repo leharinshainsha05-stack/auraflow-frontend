@@ -270,7 +270,7 @@ function App() {
     if (fileProjects.length < 2) { alert('You need at least 2 analyzed file projects!'); return; }
     setLoading(true);
     try {
-      const res = await axios.post(`${API_BASE}/file-manager/multi-project`, {
+      const res = await axios.post(`${API_BASE}/analyze`, {
         projects: fileProjects.map(p => p.segregated_data)
       });
       const parsed = JSON.parse(res.data.multi_project_plan);
