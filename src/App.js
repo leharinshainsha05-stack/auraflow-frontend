@@ -243,8 +243,8 @@ function App() {
       const formData = new FormData();
       formData.append('project_name', fileProject.name);
       formData.append('deadline', fileProject.deadline);
-      files.forEach(f => formData.append('files', f));
-      const res = await axios.post(`${API_BASE}/file-manager/upload`, formData, {
+      files.forEach(f => formData.append('file', f));
+      const res = await axios.post(`${API_BASE}/analyze`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       const parsed = JSON.parse(res.data.segregated_data);
@@ -370,7 +370,7 @@ function App() {
           <div className="sources-box">
             <h4>🔗 Sources Used</h4>
             {safeArray(r.key_sources).map((s, i) => (
-              <p key={i}>• <a href={s.url} target="_blank" rel="noreferrer" style={{color:'#00bfff'}}>{s.title}</a></p>
+              <p key={i}>• <a href={s.url} target="_blank" rel="noreferrer" style={{ color: '#00bfff' }}>{s.title}</a></p>
             ))}
           </div>
         )}
@@ -398,7 +398,7 @@ function App() {
         ))}
         {r.daily_breakdown && (
           <>
-            <h3 style={{marginTop:'8px'}}>📅 Daily Breakdown</h3>
+            <h3 style={{ marginTop: '8px' }}>📅 Daily Breakdown</h3>
             <div className="plan">
               {safeArray(r.daily_breakdown).map((d, i) => (
                 <div key={i} className="plan-item">
@@ -445,7 +445,7 @@ function App() {
     return (
       <>
         <h3>🗓️ Sequential Plan ({data.days_remaining} Days)</h3>
-        <p style={{fontSize:'0.82rem', color:'#555'}}>
+        <p style={{ fontSize: '0.82rem', color: '#555' }}>
           Tick completed days then click Check Progress for AI feedback.
         </p>
         <div className="plan">
@@ -464,21 +464,21 @@ function App() {
               <input type="checkbox"
                 checked={(completedDays[data.project_name] || []).includes(p.day)}
                 onChange={() => toggleDayComplete(data.project_name, p.day)}
-                style={{width:'18px', height:'18px', cursor:'pointer', accentColor:'#00bfff'}} />
+                style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#00bfff' }} />
             </div>
           ))}
         </div>
         <button
           onClick={() => handleCheckProgress(data)}
           disabled={checkingProgress !== null}
-          style={{background:'linear-gradient(135deg, #00bfff, #0077b3)', marginTop:'8px'}}>
+          style={{ background: 'linear-gradient(135deg, #00bfff, #0077b3)', marginTop: '8px' }}>
           {checkingProgress === data.project_name ? '🔄 Analyzing...' : '📊 Check Progress'}
         </button>
         {r && (
           <div className="progress-report">
             <div className="progress-header">
               <div className="progress-bar-wrap">
-                <div className="progress-bar-fill" style={{width:`${r.completion_percentage}%`}}/>
+                <div className="progress-bar-fill" style={{ width: `${r.completion_percentage}%` }} />
               </div>
               <span className="progress-pct">{r.completion_percentage}% complete</span>
             </div>
@@ -508,7 +508,7 @@ function App() {
   // ── Render Sidebar ─────────────────────────────────────────────
   const renderSidebar = () => (
     <div className="sidebar">
-      <div className="sidebar-header" onClick={startNew} style={{cursor: 'pointer'}}>
+      <div className="sidebar-header" onClick={startNew} style={{ cursor: 'pointer' }}>
         <h1>🌊 AuraFlow</h1>
         <p>Strategic Engine</p>
       </div>
@@ -532,7 +532,7 @@ function App() {
               <div className="project-card-meta">
                 <span className="project-card-type">{p.project_type}</span>
                 {p.days_remaining && (
-                  <span className="project-card-days" style={{color: getDaysColor(p.days_remaining)}}>
+                  <span className="project-card-days" style={{ color: getDaysColor(p.days_remaining) }}>
                     {p.days_remaining}d left
                   </span>
                 )}
@@ -560,17 +560,17 @@ function App() {
       </div>
 
       {/* Chat Button at bottom of sidebar */}
-      <div style={{padding:'12px', marginTop:'auto'}}>
+      <div style={{ padding: '12px', marginTop: 'auto' }}>
         <button
           onClick={() => setChatOpen(o => !o)}
           style={{
-            width:'100%',
+            width: '100%',
             background: chatOpen
               ? 'linear-gradient(135deg, #00bfff, #0077b3)'
               : 'linear-gradient(135deg, #00bfff, #00ccff)',
-            border:'none', borderRadius:'10px', padding:'12px',
-            color:'white', fontWeight:'600', cursor:'pointer',
-            fontSize:'0.88rem', marginTop:'0'
+            border: 'none', borderRadius: '10px', padding: '12px',
+            color: 'white', fontWeight: '600', cursor: 'pointer',
+            fontSize: '0.88rem', marginTop: '0'
           }}>
           {chatOpen ? '✕ Close Assistant' : '💬 Ask AuraFlow AI'}
         </button>
@@ -678,25 +678,25 @@ function App() {
           <h2>🔍 Soul Search</h2>
           <p>Enter your project details for real-time market research and strategic analysis.</p>
           <input placeholder="Project Name" value={projectData.project_name}
-            onChange={e => setProjectData({...projectData, project_name: e.target.value})} />
+            onChange={e => setProjectData({ ...projectData, project_name: e.target.value })} />
           <input placeholder="Project Type" value={projectData.project_type}
-            onChange={e => setProjectData({...projectData, project_type: e.target.value})} />
+            onChange={e => setProjectData({ ...projectData, project_type: e.target.value })} />
           <textarea placeholder="Describe your project..." value={projectData.description}
-            onChange={e => setProjectData({...projectData, description: e.target.value})} />
+            onChange={e => setProjectData({ ...projectData, description: e.target.value })} />
           <select value={projectData.depth}
-            onChange={e => setProjectData({...projectData, depth: e.target.value})}>
+            onChange={e => setProjectData({ ...projectData, depth: e.target.value })}>
             <option value="quick">⚡ Quick (10 mins)</option>
             <option value="medium">🔍 Medium (45 mins)</option>
             <option value="deep">🧠 Deep (2 hours)</option>
           </select>
-          <div style={{marginTop:'4px'}}>
+          <div style={{ marginTop: '4px' }}>
             <input
               placeholder="🔗 Optional: Paste a specific URL or research paper link"
               value={projectData.specific_url}
-              onChange={e => setProjectData({...projectData, specific_url: e.target.value})}
-              style={{borderColor: projectData.specific_url ? '#00bfff' : ''}}
+              onChange={e => setProjectData({ ...projectData, specific_url: e.target.value })}
+              style={{ borderColor: projectData.specific_url ? '#00bfff' : '' }}
             />
-            <p style={{fontSize:'0.78rem', color: projectData.specific_url ? '#00bfff' : '#555', margin:'4px 0 0 4px'}}>
+            <p style={{ fontSize: '0.78rem', color: projectData.specific_url ? '#00bfff' : '#555', margin: '4px 0 0 4px' }}>
               {projectData.specific_url ? '🔗 Deep Fetch mode — AI will read this page alongside web research' : 'Leave empty for general web search only'}
             </p>
           </div>
@@ -741,28 +741,28 @@ function App() {
         <h2>📁 File Manager</h2>
         <p>Upload your project files and AI will deeply analyze, expand ideas, and generate a deadline-aware plan.</p>
         <input placeholder="Project Name" value={fileProject.name}
-          onChange={e => setFileProject({...fileProject, name: e.target.value})} />
+          onChange={e => setFileProject({ ...fileProject, name: e.target.value })} />
         <input type="date" value={fileProject.deadline}
-          onChange={e => setFileProject({...fileProject, deadline: e.target.value})} />
+          onChange={e => setFileProject({ ...fileProject, deadline: e.target.value })} />
         <div className="upload-zone"
           onDragOver={e => e.preventDefault()}
           onDrop={e => { e.preventDefault(); setFiles([...files, ...Array.from(e.dataTransfer.files)]); }}>
           <p>📂 Drag & drop files here or</p>
           <input type="file" multiple
             onChange={e => setFiles([...files, ...Array.from(e.target.files)])}
-            style={{marginTop:'10px'}} />
+            style={{ marginTop: '10px' }} />
           {files.length > 0 && (
             <div className="file-list">
               {files.map((f, i) => <span key={i} className="file-tag">📄 {f.name}</span>)}
             </div>
           )}
         </div>
-        <div style={{display:'flex', gap:'10px'}}>
-          <button onClick={handleFileUpload} disabled={loading} style={{flex:1}}>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={handleFileUpload} disabled={loading} style={{ flex: 1 }}>
             {loading ? '🔄 Analyzing...' : '🧠 Analyze & Segregate'}
           </button>
           <button onClick={handleClear} disabled={loading}
-            style={{background:'#1a1a2e', border:'1px solid #2a2a3a', flex:'none', padding:'12px 20px', marginTop:'4px'}}>
+            style={{ background: '#1a1a2e', border: '1px solid #2a2a3a', flex: 'none', padding: '12px 20px', marginTop: '4px' }}>
             🗑️ Clear
           </button>
         </div>
@@ -777,16 +777,16 @@ function App() {
             <h3>📊 Project Analysis</h3>
             <p className="summary">{segregatedData.summary}</p>
             <div className="segments">
-              <div className="segment"><h4>📋 Requirements</h4>{safeArray(segregatedData.requirements).map((r,i)=><p key={i}>• {r}</p>)}</div>
-              <div className="segment"><h4>💡 Ideas (Expanded)</h4>{safeArray(segregatedData.ideas).map((r,i)=><p key={i}>• {r}</p>)}</div>
-              <div className="segment"><h4>🎨 Layouts</h4>{safeArray(segregatedData.layouts).map((r,i)=><p key={i}>• {r}</p>)}</div>
-              <div className="segment"><h4>⚙️ Technical Specs</h4>{safeArray(segregatedData.technical_specs).map((r,i)=><p key={i}>• {r}</p>)}</div>
-              <div className="segment"><h4>📅 Deadlines</h4>{safeArray(segregatedData.deadlines).map((r,i)=><p key={i}>• {r}</p>)}</div>
-              <div className="segment"><h4>🌍 Market Insights</h4>{safeArray(segregatedData.market_insights).map((r,i)=><p key={i}>• {r}</p>)}</div>
+              <div className="segment"><h4>📋 Requirements</h4>{safeArray(segregatedData.requirements).map((r, i) => <p key={i}>• {r}</p>)}</div>
+              <div className="segment"><h4>💡 Ideas (Expanded)</h4>{safeArray(segregatedData.ideas).map((r, i) => <p key={i}>• {r}</p>)}</div>
+              <div className="segment"><h4>🎨 Layouts</h4>{safeArray(segregatedData.layouts).map((r, i) => <p key={i}>• {r}</p>)}</div>
+              <div className="segment"><h4>⚙️ Technical Specs</h4>{safeArray(segregatedData.technical_specs).map((r, i) => <p key={i}>• {r}</p>)}</div>
+              <div className="segment"><h4>📅 Deadlines</h4>{safeArray(segregatedData.deadlines).map((r, i) => <p key={i}>• {r}</p>)}</div>
+              <div className="segment"><h4>🌍 Market Insights</h4>{safeArray(segregatedData.market_insights).map((r, i) => <p key={i}>• {r}</p>)}</div>
             </div>
             <div className="gaps-section">
               <h4>⚠️ Gaps Found in Brief</h4>
-              {safeArray(segregatedData.gaps).map((r,i)=><p key={i}>• {r}</p>)}
+              {safeArray(segregatedData.gaps).map((r, i) => <p key={i}>• {r}</p>)}
             </div>
             {renderProgressBlock(segregatedData)}
           </div>
@@ -827,16 +827,16 @@ function App() {
           </div>
           <p className="summary">{data?.summary}</p>
           <div className="segments">
-            <div className="segment"><h4>📋 Requirements</h4>{safeArray(data?.requirements).map((r,i)=><p key={i}>• {r}</p>)}</div>
-            <div className="segment"><h4>💡 Ideas</h4>{safeArray(data?.ideas).map((r,i)=><p key={i}>• {r}</p>)}</div>
-            <div className="segment"><h4>🎨 Layouts</h4>{safeArray(data?.layouts).map((r,i)=><p key={i}>• {r}</p>)}</div>
-            <div className="segment"><h4>⚙️ Technical Specs</h4>{safeArray(data?.technical_specs).map((r,i)=><p key={i}>• {r}</p>)}</div>
-            <div className="segment"><h4>📅 Deadlines</h4>{safeArray(data?.deadlines).map((r,i)=><p key={i}>• {r}</p>)}</div>
-            <div className="segment"><h4>🌍 Market Insights</h4>{safeArray(data?.market_insights).map((r,i)=><p key={i}>• {r}</p>)}</div>
+            <div className="segment"><h4>📋 Requirements</h4>{safeArray(data?.requirements).map((r, i) => <p key={i}>• {r}</p>)}</div>
+            <div className="segment"><h4>💡 Ideas</h4>{safeArray(data?.ideas).map((r, i) => <p key={i}>• {r}</p>)}</div>
+            <div className="segment"><h4>🎨 Layouts</h4>{safeArray(data?.layouts).map((r, i) => <p key={i}>• {r}</p>)}</div>
+            <div className="segment"><h4>⚙️ Technical Specs</h4>{safeArray(data?.technical_specs).map((r, i) => <p key={i}>• {r}</p>)}</div>
+            <div className="segment"><h4>📅 Deadlines</h4>{safeArray(data?.deadlines).map((r, i) => <p key={i}>• {r}</p>)}</div>
+            <div className="segment"><h4>🌍 Market Insights</h4>{safeArray(data?.market_insights).map((r, i) => <p key={i}>• {r}</p>)}</div>
           </div>
           <div className="gaps-section">
             <h4>⚠️ Gaps Found in Brief</h4>
-            {safeArray(data?.gaps).map((r,i)=><p key={i}>• {r}</p>)}
+            {safeArray(data?.gaps).map((r, i) => <p key={i}>• {r}</p>)}
           </div>
           {data && renderProgressBlock(data)}
         </div>
@@ -869,7 +869,7 @@ function App() {
                       <span className="lp-type">{p.project_type}</span>
                     </div>
                     <div className="lp-meta">
-                      <span className="lp-days" style={{color: getDaysColor(p.days_remaining)}}>
+                      <span className="lp-days" style={{ color: getDaysColor(p.days_remaining) }}>
                         {p.days_remaining} days left
                       </span>
                       <span className="lp-deadline">📅 {p.deadline}</span>
@@ -1026,7 +1026,7 @@ function App() {
                 ))}
               </div>
               <button onClick={() => saveReminders([])}
-                style={{background:'#1a1a2e', border:'1px solid #2a2a3a', marginTop:'8px'}}>
+                style={{ background: '#1a1a2e', border: '1px solid #2a2a3a', marginTop: '8px' }}>
                 🗑️ Clear All
               </button>
             </div>
@@ -1039,8 +1039,8 @@ function App() {
   // ── Flash Screen & Login Modal ─────────────────────────────────
   if (showFlash) {
     return (
-      <div style={{height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#121212', zIndex: 9999, position: 'relative'}}>
-         <style>{`
+      <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#121212', zIndex: 9999, position: 'relative' }}>
+        <style>{`
            @keyframes professionalFade {
              0% { opacity: 0; transform: scale(0.98) translateY(10px); }
              30% { opacity: 1; transform: scale(1) translateY(0); }
@@ -1048,9 +1048,9 @@ function App() {
              100% { opacity: 0; transform: scale(0.98) translateY(-10px); }
            }
          `}</style>
-         <h1 style={{fontSize: '3.5rem', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', margin: 0, animation: 'professionalFade 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-           <span style={{marginRight: '8px'}}>🌊</span>AuraFlow
-         </h1>
+        <h1 style={{ fontSize: '3.5rem', color: '#ffffff', fontWeight: 500, letterSpacing: '0.5px', margin: 0, animation: 'professionalFade 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ marginRight: '8px' }}>🌊</span>AuraFlow
+        </h1>
       </div>
     );
   }
@@ -1066,7 +1066,7 @@ function App() {
       setAuthError('');
       if (!loginForm.email) return setAuthError('Please enter an email address');
       if (type !== 'forgot' && !loginForm.password) return setAuthError('Please enter a password');
-      
+
       setAuthLoading(true);
       try {
         setTimeout(() => {
@@ -1094,7 +1094,7 @@ function App() {
     };
 
     const googleIcon = (
-      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{width: '20px', height: '20px', marginRight: '10px'}}>
+      <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style={{ width: '20px', height: '20px', marginRight: '10px' }}>
         <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.7 17.74 9.5 24 9.5z"></path>
         <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
         <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
@@ -1104,108 +1104,108 @@ function App() {
     );
 
     return (
-      <div style={{position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(10, 10, 15, 0.85)', backdropFilter: 'blur(10px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-         <div className="card" style={{width: '420px', textAlign: 'center', padding: '30px 40px', background: '#13131a'}}>
-            
-            {authView === 'login' && (
-              <>
-                <h2 style={{color: '#ffffff', marginBottom: '4px', fontSize: '1.8rem'}}>🌊 AuraFlow Access</h2>
-                <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Please authenticate to access the engine core.</p>
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(10, 10, 15, 0.85)', backdropFilter: 'blur(10px)', zIndex: 9000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div className="card" style={{ width: '420px', textAlign: 'center', padding: '30px 40px', background: '#13131a' }}>
 
-                <input placeholder="Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({...loginForm, email: e.target.value}); }} style={{marginBottom: '12px', textAlign: 'center'}} />
-                <input type="password" placeholder="Password" value={loginForm.password} onChange={e => { setAuthError(''); setLoginForm({...loginForm, password: e.target.value}); }} style={{marginBottom: '8px', textAlign: 'center'}} />
-                
-                {authError && (
-                  <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '0 0 10px 0' }}>
-                    {authError}
-                  </p>
-                )}
+          {authView === 'login' && (
+            <>
+              <h2 style={{ color: '#ffffff', marginBottom: '4px', fontSize: '1.8rem' }}>🌊 AuraFlow Access</h2>
+              <p style={{ color: '#888', marginBottom: '24px', fontSize: '0.9rem' }}>Please authenticate to access the engine core.</p>
 
-                <div style={{display: 'flex', justifyContent: 'flex-start', marginBottom: '20px'}}>
-                  <span style={{color: '#00bfff', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => setAuthView('forgot')}>Forgot password?</span>
-                </div>
+              <input placeholder="Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({ ...loginForm, email: e.target.value }); }} style={{ marginBottom: '12px', textAlign: 'center' }} />
+              <input type="password" placeholder="Password" value={loginForm.password} onChange={e => { setAuthError(''); setLoginForm({ ...loginForm, password: e.target.value }); }} style={{ marginBottom: '8px', textAlign: 'center' }} />
 
-                <button style={{width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)'}} onClick={() => handleAuthSubmit('login')} disabled={authLoading}>
-                  {authLoading ? 'Verifying...' : 'Login with Mail'}
-                </button>
-                
-                <div style={{display: 'flex', alignItems: 'center', margin: '20px 0', color: '#555', fontSize: '0.75rem'}}>
-                  <div style={{flex: 1, height: '1px', background: '#2a2a3a'}}></div>
-                  <span style={{padding: '0 10px', fontWeight: 'bold'}}>OR CONTINUE WITH</span>
-                  <div style={{flex: 1, height: '1px', background: '#2a2a3a'}}></div>
-                </div>
+              {authError && (
+                <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '0 0 10px 0' }}>
+                  {authError}
+                </p>
+              )}
 
-                <button style={{width: '100%', background: '#1a1a2e', border: '1px solid rgba(0,191,255,0.3)', color: '#fff', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'none'}} onClick={handleGoogleLogin}>
-                  {googleIcon} Login with Google
-                </button>
-                
-                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
-                  <span style={{color: '#888', fontSize: '0.85rem'}}>New here? <span style={{color: '#00bfff', cursor: 'pointer', fontWeight: 'bold', marginLeft: '6px'}} onClick={() => setAuthView('signup')}>Sign up</span></span>
-                </div>
-              </>
-            )}
+              <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '20px' }}>
+                <span style={{ color: '#00bfff', fontSize: '0.8rem', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => setAuthView('forgot')}>Forgot password?</span>
+              </div>
 
-            {authView === 'signup' && (
-              <>
-                <h2 style={{color: '#ffffff', marginBottom: '4px', fontSize: '1.8rem'}}>🌊 Join AuraFlow</h2>
-                <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Create an account to unlock the strategic engine.</p>
+              <button style={{ width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)' }} onClick={() => handleAuthSubmit('login')} disabled={authLoading}>
+                {authLoading ? 'Verifying...' : 'Login with Mail'}
+              </button>
 
-                <input placeholder="Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({...loginForm, email: e.target.value}); }} style={{marginBottom: '12px', textAlign: 'center'}} />
-                <input type="password" placeholder="Create Password" value={loginForm.password} onChange={e => { setAuthError(''); setLoginForm({...loginForm, password: e.target.value}); }} style={{marginBottom: '20px', textAlign: 'center'}} />
-                
-                {authError && (
-                  <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '-10px 0 10px 0' }}>
-                    {authError}
-                  </p>
-                )}
+              <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0', color: '#555', fontSize: '0.75rem' }}>
+                <div style={{ flex: 1, height: '1px', background: '#2a2a3a' }}></div>
+                <span style={{ padding: '0 10px', fontWeight: 'bold' }}>OR CONTINUE WITH</span>
+                <div style={{ flex: 1, height: '1px', background: '#2a2a3a' }}></div>
+              </div>
 
-                <button style={{width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)'}} onClick={() => handleAuthSubmit('signup')} disabled={authLoading}>
-                  {authLoading ? 'Creating...' : 'Register with Mail'}
-                </button>
+              <button style={{ width: '100%', background: '#1a1a2e', border: '1px solid rgba(0,191,255,0.3)', color: '#fff', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'none' }} onClick={handleGoogleLogin}>
+                {googleIcon} Login with Google
+              </button>
 
-                <div style={{display: 'flex', alignItems: 'center', margin: '20px 0', color: '#555', fontSize: '0.75rem'}}>
-                  <div style={{flex: 1, height: '1px', background: '#2a2a3a'}}></div>
-                  <span style={{padding: '0 10px', fontWeight: 'bold'}}>OR CONTINUE WITH</span>
-                  <div style={{flex: 1, height: '1px', background: '#2a2a3a'}}></div>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                <span style={{ color: '#888', fontSize: '0.85rem' }}>New here? <span style={{ color: '#00bfff', cursor: 'pointer', fontWeight: 'bold', marginLeft: '6px' }} onClick={() => setAuthView('signup')}>Sign up</span></span>
+              </div>
+            </>
+          )}
 
-                <button style={{width: '100%', background: '#1a1a2e', border: '1px solid rgba(0,191,255,0.3)', color: '#fff', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'none'}} onClick={handleGoogleLogin}>
-                  {googleIcon} Sign up with Google
-                </button>
-                
-                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
-                  <span style={{color: '#888', fontSize: '0.85rem'}}>Already have an account?<span style={{color: '#00bfff', cursor: 'pointer', fontWeight: 'bold', marginLeft: '6px'}} onClick={() => setAuthView('login')}>Login</span></span>
-                </div>
-              </>
-            )}
+          {authView === 'signup' && (
+            <>
+              <h2 style={{ color: '#ffffff', marginBottom: '4px', fontSize: '1.8rem' }}>🌊 Join AuraFlow</h2>
+              <p style={{ color: '#888', marginBottom: '24px', fontSize: '0.9rem' }}>Create an account to unlock the strategic engine.</p>
 
-            {authView === 'forgot' && (
-              <>
-                <h2 style={{color: '#ffffff', marginBottom: '8px', fontSize: '1.8rem'}}>🔒 Reset Credentials</h2>
-                <p style={{color: '#888', marginBottom: '24px', fontSize: '0.9rem'}}>Enter your email. If registered, we will send an email containing your username alongside a reset password option.</p>
-                
-                <input placeholder="Registered Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({...loginForm, email: e.target.value}); }} style={{marginBottom: '20px', textAlign: 'center'}} />
-                
-                {authError && (
-                  <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '-10px 0 10px 0' }}>
-                    {authError}
-                  </p>
-                )}
+              <input placeholder="Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({ ...loginForm, email: e.target.value }); }} style={{ marginBottom: '12px', textAlign: 'center' }} />
+              <input type="password" placeholder="Create Password" value={loginForm.password} onChange={e => { setAuthError(''); setLoginForm({ ...loginForm, password: e.target.value }); }} style={{ marginBottom: '20px', textAlign: 'center' }} />
 
-                <button style={{width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)'}} onClick={() => handleAuthSubmit('forgot')} disabled={authLoading}>
-                  {authLoading ? 'Sending...' : 'Send Reset Link'}
-                </button>
-                
-                <div style={{display: 'flex', justifyContent: 'flex-end', marginTop: '20px'}}>
-                  <span style={{color: '#00bfff', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 'bold'}} onClick={() => setAuthView('login')}>Back to Login</span>
-                </div>
-              </>
-            )}
+              {authError && (
+                <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '-10px 0 10px 0' }}>
+                  {authError}
+                </p>
+              )}
 
-            {(authView === 'login' || authView === 'signup') && (
-               <button style={{width: '100%', background: 'transparent', color: '#444', marginTop: '8px', border: 'none', fontSize: '0.75rem', boxShadow: 'none'}} onClick={() => { setShowLogin(false); setPendingSection(null); setAuthView('login'); }}>[Cancel & Return to Home]</button>
-            )}
-         </div>
+              <button style={{ width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)' }} onClick={() => handleAuthSubmit('signup')} disabled={authLoading}>
+                {authLoading ? 'Creating...' : 'Register with Mail'}
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0', color: '#555', fontSize: '0.75rem' }}>
+                <div style={{ flex: 1, height: '1px', background: '#2a2a3a' }}></div>
+                <span style={{ padding: '0 10px', fontWeight: 'bold' }}>OR CONTINUE WITH</span>
+                <div style={{ flex: 1, height: '1px', background: '#2a2a3a' }}></div>
+              </div>
+
+              <button style={{ width: '100%', background: '#1a1a2e', border: '1px solid rgba(0,191,255,0.3)', color: '#fff', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'none' }} onClick={handleGoogleLogin}>
+                {googleIcon} Sign up with Google
+              </button>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                <span style={{ color: '#888', fontSize: '0.85rem' }}>Already have an account?<span style={{ color: '#00bfff', cursor: 'pointer', fontWeight: 'bold', marginLeft: '6px' }} onClick={() => setAuthView('login')}>Login</span></span>
+              </div>
+            </>
+          )}
+
+          {authView === 'forgot' && (
+            <>
+              <h2 style={{ color: '#ffffff', marginBottom: '8px', fontSize: '1.8rem' }}>🔒 Reset Credentials</h2>
+              <p style={{ color: '#888', marginBottom: '24px', fontSize: '0.9rem' }}>Enter your email. If registered, we will send an email containing your username alongside a reset password option.</p>
+
+              <input placeholder="Registered Email Address" value={loginForm.email} onChange={e => { setAuthError(''); setLoginForm({ ...loginForm, email: e.target.value }); }} style={{ marginBottom: '20px', textAlign: 'center' }} />
+
+              {authError && (
+                <p style={{ color: '#ff4d4d', fontSize: '0.8rem', textAlign: 'left', margin: '-10px 0 10px 0' }}>
+                  {authError}
+                </p>
+              )}
+
+              <button style={{ width: '100%', padding: '12px', fontSize: '1rem', boxShadow: '0 4px 15px rgba(0, 191, 255, 0.2)' }} onClick={() => handleAuthSubmit('forgot')} disabled={authLoading}>
+                {authLoading ? 'Sending...' : 'Send Reset Link'}
+              </button>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+                <span style={{ color: '#00bfff', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 'bold' }} onClick={() => setAuthView('login')}>Back to Login</span>
+              </div>
+            </>
+          )}
+
+          {(authView === 'login' || authView === 'signup') && (
+            <button style={{ width: '100%', background: 'transparent', color: '#444', marginTop: '8px', border: 'none', fontSize: '0.75rem', boxShadow: 'none' }} onClick={() => { setShowLogin(false); setPendingSection(null); setAuthView('login'); }}>[Cancel & Return to Home]</button>
+          )}
+        </div>
       </div>
     );
   };
@@ -1213,19 +1213,19 @@ function App() {
   // ── Main Return ────────────────────────────────────────────────
   return (
     <>
-    {renderAuthModal()}
-    <div className="layout">
-      {renderSidebar()}
-      <div className="content-area">
-        {activeSection === 'new' && renderNewProject()}
-        {activeSection === 'soul' && renderSoulSearch()}
-        {activeSection === 'file' && renderFileManager()}
-        {activeSection === 'view' && renderProjectView()}
-        {activeSection === 'multi' && renderMultiProject()}
-        {activeSection === 'reminders' && renderReminders()}
+      {renderAuthModal()}
+      <div className="layout">
+        {renderSidebar()}
+        <div className="content-area">
+          {activeSection === 'new' && renderNewProject()}
+          {activeSection === 'soul' && renderSoulSearch()}
+          {activeSection === 'file' && renderFileManager()}
+          {activeSection === 'view' && renderProjectView()}
+          {activeSection === 'multi' && renderMultiProject()}
+          {activeSection === 'reminders' && renderReminders()}
+        </div>
+        {chatOpen && renderChatPanel()}
       </div>
-      {chatOpen && renderChatPanel()}
-    </div>
     </>
   );
 }
