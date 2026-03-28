@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const API_BASE = 'https://auraflow-backend-nu2p.onrender.com/api';
+const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:8000/api';
 
 function App() {
   const [showFlash, setShowFlash] = useState(true);
@@ -50,6 +50,22 @@ function App() {
     const timer = setTimeout(() => setShowFlash(false), 2500);
     return () => clearTimeout(timer);
   }, []);
+  useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  const loggedIn = params.get('logged_in');
+  const user = params.get('user');
+  if (loggedIn === 'true' && user) {
+    setIsAuthenticated(true);
+    setShowLogin(false);
+    if (pendingSection) {
+      setActiveSection(pendingSection);
+      setActiveProjectId(null);
+      setPendingSection(null);
+    }
+    // Clean up URL
+    window.history.replaceState({}, document.title, '/');
+  }
+}, []);
 
   const attemptNavigation = (section) => {
     if (!isAuthenticated) {
@@ -244,7 +260,7 @@ function App() {
       formData.append('project_name', fileProject.name);
       formData.append('deadline', fileProject.deadline);
       files.forEach(f => formData.append('file', f));
-      const res = await axios.post(`${API_BASE}/analyze`, formData, {
+      const res = await axios.post(`${API_BASE}/file-manager/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       const parsed = JSON.parse(res.data.segregated_data);
@@ -270,7 +286,7 @@ function App() {
     if (fileProjects.length < 2) { alert('You need at least 2 analyzed file projects!'); return; }
     setLoading(true);
     try {
-      const res = await axios.post(`${API_BASE}/analyze`, {
+      const res = await axios.post(`${API_BASE}/file-manager/multi-project`, {
         projects: fileProjects.map(p => p.segregated_data)
       });
       const parsed = JSON.parse(res.data.multi_project_plan);
@@ -1059,7 +1075,7 @@ function App() {
     if (!showLogin) return null;
 
     const handleGoogleLogin = () => {
-      window.location.href = 'https://auraflow-backend-nu2p.onrender.com/api/google';
+      window.location.href = `${API_BASE}/google`;
     };
 
     const handleAuthSubmit = async (type) => {
